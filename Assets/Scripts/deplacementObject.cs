@@ -24,8 +24,8 @@ public class deplacementObject : MonoBehaviour {
 	private GameObject sousModule;
 
 	private Vector3 maPosition;
-	private int parentposition; 
-	private bool limites = true;
+	//private int parentposition; 
+	//private bool limites = true;
 	private float difference = 0.0F;
 	private float distanceCompilation;
 	private float distanceMax;
@@ -187,17 +187,19 @@ public class deplacementObject : MonoBehaviour {
 								distanceMax = monScale.y;
 								//Debug.Log ("monScale : " + monScale);
 								Debug.Log (parentTransform.position - enfantTransform.position);
-
-								if (((parentTransform.position.x - enfantTransform.position.x) + (parentTransform.position.z - enfantTransform.position.z)) > 0)
+								Transform TransformCam = maCam.GetComponent<Transform> ();
+								/*
+								//if (((parentTransform.position.x - enfantTransform.position.x) + (parentTransform.position.z - enfantTransform.position.z)) > 0)
+								if(TransformCam.rotation.y > 90 && TransformCam.rotation.y < 270)
 								{
-									distanceCompilation = distanceMax / 2 + d;
+									//distanceCompilation = distanceMax / 2 + d;
 								} 
 								else 
 								{
-									distanceCompilation = distanceMax / 2 - d;
+									//distanceCompilation = distanceMax / 2 - d;
 								}
 
-								parentposition = p;
+								//parentposition = p;
 								/*
 								int m;
 								for (m = 0; m < modulesLayers.Length; m++)
@@ -225,7 +227,7 @@ public class deplacementObject : MonoBehaviour {
 			}
 		} 
 
-		if (mouseDown == true && (parentposition != null && monParent != null))
+		if (mouseDown == true && monParent != null)
 		{
 			//Debug.Log (selectionner);
 			/*
@@ -260,19 +262,34 @@ public class deplacementObject : MonoBehaviour {
 				Vector3 maPositionSelection = monTransform.position;
 				//maPositionSelection.x = (maPositionSelection.x + difference/2);
 				//monTransform.position = maPositionSelection;
-
+				Transform TransformCam = cam.GetComponent<Transform> ();
+				Vector3 maCamRotation = TransformCam.eulerAngles;
+				//Debug.Log("MA ROTATION DE CAM = " + maCamRotation.y);
 				if ((distanceCompilation + difference) > 0 || (distanceCompilation + difference) < distanceMax) 
 				{
-					if (moduleTransform.rotation.y < -180 || moduleTransform.rotation.y > 0) 
+					if(maCamRotation.y > 90 && maCamRotation.y < 270)
 					{
-						monTransform.Translate (Vector3.left * difference);
+						monTransform.Translate (Vector3.right * difference);
 					} 
 					else 
 					{
-						monTransform.Translate (Vector3.left * -difference);
+						monTransform.Translate (Vector3.right * -difference);
+					}
+					/*
+					//if (moduleTransform.rotation.y < -180 || moduleTransform.rotation.y > 0) 
+					Debug.Log("MA ROTATION DE CAM" + TransformCam.rotation);
+					if(TransformCam.rotation.y > 90 && TransformCam.rotation.y < 270)
+					{
+						monTransform.Translate (Vector3.right * difference);
+					} 
+					else 
+					{
+						monTransform.Translate (Vector3.right * -difference);
 					}
 					distanceCompilation += difference;
-					Debug.Log (distanceCompilation);
+					//Debug.Log (distanceCompilation);
+					*/
+					distanceCompilation += difference;
 				}
 			}	
 		}
