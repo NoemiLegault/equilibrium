@@ -62,8 +62,37 @@ public class ControleGravite : MonoBehaviour {
 		}
 
 		/* -- LORSQUE LA GRAVITÉ EST EFFECTIVE ------------------------------------------*/
-		if(gravite == true){																				// si la gravité est active
+		if (gravite == true) {																			// si la gravité est active
 
+
+			// oeillet (text noemi)//////////////////////////////////////////////////////
+			for (int e = 0; e < tableauDesElements.Length; e++) 
+			{	
+				
+				Transform monTransform = tableauDesElements[e].GetComponent<Transform> ();
+				int x = 0;
+				while (x < monTransform.childCount) 
+				{
+					GameObject monEnfant0 = monTransform.GetChild (x).gameObject;
+					if (monEnfant0.tag == "basPoid") 
+					{
+						Collider monCollider = monEnfant0.GetComponent<Collider>();
+						if (!monCollider.isTrigger) 
+						{
+							Debug.Log ("OEILLET TOUCHER !!!!! RETOUR EN MODE FIX !!!!");
+							retourPositionActuelle ();
+						}
+					}
+
+					x++;
+				}
+			}
+		
+
+			/////////////////////////////////////////////////////////////////////////////
+			 
+			
+			
 			chronometre += Time.deltaTime;																	// démarre le chronomètre
 
 			for (int i = 0; i < tableauDesElements.Length; i++) {											// pour tous les éléments mobiles
@@ -99,9 +128,9 @@ public class ControleGravite : MonoBehaviour {
 				}
 			}
 				
-		}
+		} // fin if(gravite == true)
 
-	}
+	} // fin update() -----------------------------------------------------------------
 
 	//////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////   FONCTIONS   ///////////////////////////////////////
@@ -118,6 +147,7 @@ public class ControleGravite : MonoBehaviour {
 			rotationElement[i] = tableauDesElements[i].transform.rotation;									// récupère l'angle de l'élément dans un tableau
 
 			Deselection(tableauDesElements[i]);	
+			//Debug.Log (tableauDesElements [i]);
 		}
 		gravite = true;																						// booléen, la gravité est active
 	}
@@ -131,7 +161,7 @@ public class ControleGravite : MonoBehaviour {
 			tableauDesElements[i].transform.position = positionElement[i];									// repositionne l'élément à sa position avant gravité
 			tableauDesElements[i].transform.rotation = rotationElement[i];									// repositionne l'angle de l'élément avant gravité
 
-
+			ResetEcouteurBasPoid(tableauDesElements[i]);	
 			/*
 			float retour = vitesse * Time.deltaTime;
 			transform.position = Vector3.MoveTowards(tableauDePoids[i].transform.position, positionDuPoid[i], retour);
@@ -144,21 +174,41 @@ public class ControleGravite : MonoBehaviour {
 
 	void Deselection(GameObject selectionner)
 	{
-		Transform monTransform = selectionner.GetComponent<Transform> ();
+		Transform monTransform2 = selectionner.GetComponent<Transform> ();
 		int x = 0;
-		while(x < monTransform.childCount)
+		while(x < monTransform2.childCount)
 		{
-			GameObject monEnfant0 = monTransform.GetChild (x).gameObject;
-			monEnfant0.SetActive (true);
-			if (monEnfant0.name != "deselectionner") 
+			GameObject monEnfant0 = monTransform2.GetChild(x).gameObject;
+			monEnfant0.SetActive(false);
+			if (monEnfant0.name != "selectionner") 
 			{
-				monEnfant0.SetActive (false);
+				//Debug.Log (monEnfant0.name);
+				monEnfant0.SetActive (true);
+			}
+
+			//monEnfant0 = null;
+
+			x++;
+		}
+	}
+		
+	void ResetEcouteurBasPoid(GameObject selectionner)
+	{
+		Transform monTransform2 = selectionner.GetComponent<Transform> ();
+		int x = 0;
+		while(x < monTransform2.childCount)
+		{
+			GameObject monEnfant0 = monTransform2.GetChild(x).gameObject;
+			if (monEnfant0.tag == "basPoid") 
+			{
+				//Debug.Log (monEnfant0.name);
+				Collider monCollider = monEnfant0.GetComponent<Collider> ();
+				monCollider.isTrigger = true;
 			}
 
 			x++;
 		}
-
-
 	}
+
 
 }
