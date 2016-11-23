@@ -105,6 +105,7 @@ public class ControleGravite : MonoBehaviour {
 					if (velociteElementEnY < seuilDeReussiteNegatif || 
 						velociteElementEnY >seuilDeReussitePositif) {										// si la vélocité dépasse l'intervalle de réussite
 						niveauReussi = false;																// le niveau n'est pas réussi
+						Debug.Log ("Vous avez dépassé les seuil de réusite");
 					}
 				}
 			}
@@ -148,8 +149,8 @@ public class ControleGravite : MonoBehaviour {
 			Deselection(tableauDesElements[i]);	
 		}
 		gravite = true;																						// booléen, la gravité est active
-		clickerBoutonGravite = true;
-		Debug.Log(gravite);
+		clickerBoutonGravite = true;																		// la condition du bouton ACTIVER/DÉSACTIVER à l'écran est à true
+		niveauReussi = true;																				// réinitialise la condition de réussite à true
 		boutonActiverGravite.SetActive(false);																// efface le bouton "ACTIVER GRAVITÉ"
 		boutonDesactiverGravite.SetActive(true);															// affiche le bouton "DÉSACTIVER GRAVITÉ"
 	}
@@ -167,8 +168,7 @@ public class ControleGravite : MonoBehaviour {
 		}
 		chronometre = 0;																					// réinitialise le chronomètre à 0	
 		gravite = false;																					// booléen, la gravité est inactive
-		clickerBoutonGravite = false;
-		Debug.Log(gravite);
+		clickerBoutonGravite = false;																		// la condition du bouton ACTIVER/DÉSACTIVER à l'écran est à false
 		boutonDesactiverGravite.SetActive(false);															// efface le bouton "DÉSACTIVER GRAVITÉ"
 		boutonActiverGravite.SetActive(true);																// affiche le bouton "ACTIVER GRAVITÉ"
 	}

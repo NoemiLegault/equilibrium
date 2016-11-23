@@ -1,0 +1,31 @@
+﻿
+EQUILIBRIUM
+
+Les modules développés pour le sprint 1 sont :		
+	- déplacement de la caméra 	(Mélodie)
+	- déplacement des poids 	(Noémi)
+	- contrôle de la gravité		(Simon)
+	- logo et interface menu		(Patricia)
+			
+Les contrôle pour jouer sont :
+	- flèches pour se déplacer en orbite autour du mobile
+	- roulette pour avancer et reculer dans l'axe face au mobile
+	- clic gauche pour déplacer les poids
+	- touche "espace" ou bouton "ACTIVER / DÉSACTIVER" à l'écran pour activer et désactiver la gravité
+			
+Objectif :
+	- positionner correctement les poids du mobile de telle sorte que, en appuyant sur le bouton qui active
+	  de la gravité, celui-ci garde son équilibre
+	- dans la remise actuelle, les poids sont équilibrés dès le départ
+	- un texte GAGNÉ (test) apparaît après 3 secondes si les paramètres d'équilibre sont atteints
+	- si non, le mobile se replace à sa position précédante
+
+Bogues et commentaires :
+	- comme équipe, nous avons principalement focalisé sur les principes de jeu
+	- le design sera grandement travaillé lors du sprint 2
+	- le sprint 2 du module caméra est déjà complété (avancer et reculer dans l'axe face au mobile)
+	- sur le menu, les boutons JOUER, NIVEAUX, INSTRUCTIONS et QUITTER fonctionnent
+	- le texte du menu NIVEAU sera remplacé par une interface du parcours du joueur
+	- les poids dépassent ses limites (tige et point de pivot), ceci sera réglé pour la remise du sprint 2
+	- l'ergonomie du gameplay devra être plus claire pour le joueur
+	- à la réussite du niveau, le joueur sera dirigé vers le niveau suivant pour le sprint 2
