@@ -4,33 +4,34 @@ using UnityEngine.UI;
 
 public class ControleGravite : MonoBehaviour {
 
-	/*-- VARIABLES ----------------------------------------------------------------------*/
-
-	private bool gravite = false;																			// initialise la scène sans gravité
+	/*-- VARIABLE DES CONDITIONS DE GAMEPLAY --------------------------------------------*/
+	private bool gravite = false;																			// la condition gravité est initialisé à false
+	private bool clickerBoutonGravite = false;																// la condition bouton à l'écran Activer / Désactiver gravité est initialisé à false
 	private bool niveauReussi = true;																		// condition de réussite du niveau
+	public float seuilDeReussitePositif = 0.5f;																// limite supérieure de l'intervalle de vélocité à respecter
+	public float seuilDeReussiteNegatif = -0.5f;															// limite inférieure de l'intervalle de vélocité à respecter
+	public float facteurDeVelociteEnY = 100f;																// facteur d'ajout de velocité en Y
+	private float chronometre;																				// chronomète le temps d'équilibre
+	public float tempsReussite = 5.0f;
 
+	/*-- VARIABLES DES ÉLÉMEMNTS DU MOBILES ---------------------------------------------*/
 	public GameObject[] tableauDesElements;																	// tableau des éléments mobiles
 	private Vector3[] positionElement;																		// tableau des positions des éléments mobiles
 	private Quaternion[] rotationElement; 																	// tableau des angles de rotation des éléments mobiles
 
-	public float nbtiges;
-
-	private float chronometre;																				// chronomète le temps d'équilibre
-
-	public float seuilDeReussitePositif = 0.5f;																// limite supérieure de l'intervalle de vélocité à respecter
-	public float seuilDeReussiteNegatif = -0.5f;															// limite inférieure de l'intervalle de vélocité à respecter
-	public float facteurDeVelociteEnY = 100f;																// facteur d'ajout de velocité en Y
-
-	public float tempsReussite = 5.0f;
-
-
-
+	/*-- VARIABLES DES ÉLÉMENTS DU UI ---------------------------------------------------*/
+	public GameObject boutonActiverGravite;																	// bouton d'activation de la gravité
+	public GameObject boutonDesactiverGravite;																// bouton de désactivation de la gravité
+	public GameObject gagneTexteTest;																		// test affichage GAGNÉ
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////    START    //////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 
-	void Start () {
+	void Start () {												
+		boutonDesactiverGravite.SetActive(false);															// initialise le bouton "DÉSACTIVER GRAVITÉ" à false
+		gagneTexteTest.SetActive(false);																	// initialise le test d'affichage à false
+
 		positionElement = new Vector3[tableauDesElements.Length];											// initialise la longueur du tableau des positions
 		rotationElement = new Quaternion[tableauDesElements.Length];										// initialise la longueur du tableau des angles de rotation
 
@@ -38,7 +39,6 @@ public class ControleGravite : MonoBehaviour {
 			Rigidbody etatDuPoids = tableauDesElements[i].GetComponent<Rigidbody>();						// récupère le Rigidbody du GameObject
 			etatDuPoids.useGravity = false;																	// initialise le jeu à zéro gravité
 		}
-
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -47,23 +47,19 @@ public class ControleGravite : MonoBehaviour {
 
 	void Update () {
 
-		/*-- ACTIVER / DÉSACTIVER LA GRAVITÉ ---------------------------------------------*/
+		/*-- ACTIVER LA GRAVITÉ -------------------------------------------------------*/
 
-		if (Input.GetKeyDown("space")){																		// au clic la touche "espace"
-
-			if (gravite == false){																			// si la gravité n'est pas effective
-				positionActuelle ();																		// appel de la fonction qui récupère la position des éléments
-
-			}
-				
-			else {																							// si la gravité est effective
-				retourPositionActuelle ();																	// appel de la fonction qui replace les éléments
-			}
+		if (gravite == false && (Input.GetKeyDown ("space") || clickerBoutonGravite == true)) 				// si la gravité est à false et que, space ou clickerBoutonGravite est à true
+		{
+			activeGravite ();																				// appel de la fonction qui active la gravité
 		}
-
+		else if (gravite == true && (Input.GetKeyDown ("space") || clickerBoutonGravite == false))			// si la gravité est à true et que, space ou clickerBoutonGravite est à false
+		{
+			desactiveGravite ();																			// appel de la fonction qui désactive la gravité
+		}
+			
 		/* -- LORSQUE LA GRAVITÉ EST EFFECTIVE ------------------------------------------*/
-		if (gravite == true) {																			// si la gravité est active
-
+		if (gravite == true) {																				// si la gravité est active
 
 			// oeillet (text noemi)//////////////////////////////////////////////////////
 			for (int e = 0; e < tableauDesElements.Length; e++) 
@@ -80,7 +76,7 @@ public class ControleGravite : MonoBehaviour {
 						if (!monCollider.isTrigger) 
 						{
 							Debug.Log ("OEILLET TOUCHER !!!!! RETOUR EN MODE FIX !!!!");
-							retourPositionActuelle ();
+							desactiveGravite ();
 						}
 					}
 
@@ -88,11 +84,8 @@ public class ControleGravite : MonoBehaviour {
 				}
 			}
 		
-
 			/////////////////////////////////////////////////////////////////////////////
-			 
-			
-			
+
 			chronometre += Time.deltaTime;																	// démarre le chronomètre
 
 			for (int i = 0; i < tableauDesElements.Length; i++) {											// pour tous les éléments mobiles
@@ -112,32 +105,39 @@ public class ControleGravite : MonoBehaviour {
 					if (velociteElementEnY < seuilDeReussiteNegatif || 
 						velociteElementEnY >seuilDeReussitePositif) {										// si la vélocité dépasse l'intervalle de réussite
 						niveauReussi = false;																// le niveau n'est pas réussi
-						Debug.Log ("la velocité dépasse le seuil de réussite ???????????????????");
-						//indicateurReussite.text = "PERDU";
+						Debug.Log ("Vous avez dépassé les seuil de réusite");
 					}
 				}
 			}
 				
 			/* -- NIVEAU RÉUSSI ---------------------------------------------------------*/
-			if (chronometre >= tempsReussite){																		// après 5 secondes
+			if (chronometre >= tempsReussite){																// après 5 secondes
 				if(niveauReussi){																			// si l'intervalle de vélocité est respecté
-					Debug.Log ("GAGNÉ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-					// le joueur a réussi le niveau
+					Debug.Log ("GAGNÉ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");								// le joueur a réussi le niveau
+					gagneTexteTest.SetActive(true);															// test UI, le joueur a réussi le niveau
 				}else{
-					retourPositionActuelle ();
+					desactiveGravite ();
 				}
 			}
 				
-		} // fin if(gravite == true)
+		} 																									// fin if(gravite == true)
 
-	} // fin update() -----------------------------------------------------------------
+	} 																										// fin update()
 
 	//////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////   FONCTIONS   ///////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////
 
+	public void checkbouton()																				// au clic du bouton Activer / Désactiver gravité à l'écran
+	{
+		if (!clickerBoutonGravite) {																		// si le bouton de gravité à l'écran est à false
+			clickerBoutonGravite = true;																	// la condition clickerBoutonGravite est à true
+		} else {
+			clickerBoutonGravite = false;																	// la condition clickerBoutonGravite est à false
+		}
+	}
 
-	void positionActuelle () {
+	public void activeGravite () {
 		for (int i = 0; i < tableauDesElements.Length; i++) {												// boucle sur le tableau des éléments mobiles
 			Rigidbody etatDuPoids = tableauDesElements[i].GetComponent<Rigidbody>();						// récupère le Rigidbody du GameObject
 			etatDuPoids.useGravity = true;																	// active la gravité
@@ -147,12 +147,15 @@ public class ControleGravite : MonoBehaviour {
 			rotationElement[i] = tableauDesElements[i].transform.rotation;									// récupère l'angle de l'élément dans un tableau
 
 			Deselection(tableauDesElements[i]);	
-			//Debug.Log (tableauDesElements [i]);
 		}
 		gravite = true;																						// booléen, la gravité est active
+		clickerBoutonGravite = true;																		// la condition du bouton ACTIVER/DÉSACTIVER à l'écran est à true
+		niveauReussi = true;																				// réinitialise la condition de réussite à true
+		boutonActiverGravite.SetActive(false);																// efface le bouton "ACTIVER GRAVITÉ"
+		boutonDesactiverGravite.SetActive(true);															// affiche le bouton "DÉSACTIVER GRAVITÉ"
 	}
 
-	void retourPositionActuelle () {
+	public void desactiveGravite () {
 		for (int i = 0; i < tableauDesElements.Length; i++) {												// boucle sur le tableau des éléments mobiles
 			Rigidbody etatDuPoids = tableauDesElements[i].GetComponent<Rigidbody>();						// récupère le Rigidbody du GameObject
 			etatDuPoids.useGravity = false;																	// désactive la gravité
@@ -162,13 +165,12 @@ public class ControleGravite : MonoBehaviour {
 			tableauDesElements[i].transform.rotation = rotationElement[i];									// repositionne l'angle de l'élément avant gravité
 
 			ResetEcouteurBasPoid(tableauDesElements[i]);	
-			/*
-			float retour = vitesse * Time.deltaTime;
-			transform.position = Vector3.MoveTowards(tableauDePoids[i].transform.position, positionDuPoid[i], retour);
-			*/
 		}
-		chronometre = 0;																					// réinitialise le chronomètre à 0
+		chronometre = 0;																					// réinitialise le chronomètre à 0	
 		gravite = false;																					// booléen, la gravité est inactive
+		clickerBoutonGravite = false;																		// la condition du bouton ACTIVER/DÉSACTIVER à l'écran est à false
+		boutonDesactiverGravite.SetActive(false);															// efface le bouton "DÉSACTIVER GRAVITÉ"
+		boutonActiverGravite.SetActive(true);																// affiche le bouton "ACTIVER GRAVITÉ"
 	}
 
 
@@ -182,12 +184,8 @@ public class ControleGravite : MonoBehaviour {
 			monEnfant0.SetActive(false);
 			if (monEnfant0.name != "selectionner") 
 			{
-				//Debug.Log (monEnfant0.name);
 				monEnfant0.SetActive (true);
 			}
-
-			//monEnfant0 = null;
-
 			x++;
 		}
 	}
@@ -201,7 +199,6 @@ public class ControleGravite : MonoBehaviour {
 			GameObject monEnfant0 = monTransform2.GetChild(x).gameObject;
 			if (monEnfant0.tag == "basPoid") 
 			{
-				//Debug.Log (monEnfant0.name);
 				Collider monCollider = monEnfant0.GetComponent<Collider> ();
 				monCollider.isTrigger = true;
 			}
